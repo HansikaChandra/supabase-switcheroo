@@ -1,7 +1,7 @@
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
+import { KampusApp } from "@/kampus/load-app";
 
-const KampusApp = lazy(() => import("@/kampus/App"));
 
 export const Route = createFileRoute("/$")({
   ssr: false,
