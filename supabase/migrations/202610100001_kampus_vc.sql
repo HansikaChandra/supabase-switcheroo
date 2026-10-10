@@ -1273,9 +1273,7 @@ create policy creators_manage_own_deliverables on storage.objects for all
 -- This avoids publishing profiles that cannot sign in through Supabase Auth.
 
 grant usage on schema public to anon, authenticated;
-revoke all on public.profiles from anon, authenticated;
-grant select (id, full_name, role, avatar_url, location, bio, company_name, industry, is_public, is_demo, created_at, updated_at)
-  on public.profiles to anon, authenticated;
+grant select on public.profiles to anon, authenticated;
 grant update (full_name, avatar_url, location, bio, company_name, industry, is_public)
   on public.profiles to authenticated;
 grant select on public.creator_profiles, public.portfolio_items, public.verification_signals, public.briefs, public.reviews to anon, authenticated;
