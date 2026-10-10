@@ -6,7 +6,7 @@
 .app-shell { background: hsl(250 45% 98%); color: hsl(235 28% 19%); font-family: var(--app-font-sans); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: hsl(var(--background)); color: hsl(var(--foreground)); font-family: var(--app-font-sans); }
+body { margin: 0; background: hsl(250 45% 98%); color: hsl(235 28% 19%); font-family: var(--app-font-sans); }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; text-decoration: none; }
