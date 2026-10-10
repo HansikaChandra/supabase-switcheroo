@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 
 const queryClient = new QueryClient();
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const supabaseUrl = import.meta.env['VITE_SUPABASE_URL'] as string | undefined;
+const supabaseKey = import.meta.env['VITE_SUPABASE_ANON_KEY'] as string | undefined;
 const supabase: SupabaseClient | null = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 const profileColumns = 'id,full_name,role,avatar_url,location,bio,company_name,industry,is_public,is_demo,created_at,updated_at';
 type Profile = { id: string; full_name?: string; role?: 'creator' | 'brand'; avatar_url?: string; location?: string; bio?: string; company_name?: string; industry?: string; is_public?: boolean; is_demo?: boolean };
@@ -115,9 +115,9 @@ function useAuth() {
           const metadata = session.user.user_metadata || {};
           setProfile({
             id: session.user.id,
-            full_name: metadata.full_name || session.user.email?.split('@')[0] || '',
-            company_name: metadata.company_name || undefined,
-            industry: metadata.industry || undefined,
+            full_name: metadata['full_name'] || session.user.email?.split('@')[0] || '',
+            company_name: metadata['company_name'] || undefined,
+            industry: metadata['industry'] || undefined,
           });
           setProfileUnavailable(true);
         }
@@ -127,9 +127,9 @@ function useAuth() {
         const metadata = session.user.user_metadata || {};
         setProfile({
           id: session.user.id,
-          full_name: metadata.full_name || session.user.email?.split('@')[0] || '',
-          company_name: metadata.company_name || undefined,
-          industry: metadata.industry || undefined,
+          full_name: metadata['full_name'] || session.user.email?.split('@')[0] || '',
+          company_name: metadata['company_name'] || undefined,
+          industry: metadata['industry'] || undefined,
         });
         setProfileUnavailable(true);
       } finally {
@@ -282,7 +282,7 @@ function App() {
   </TooltipProvider></QueryClientProvider>;
 }
 
-function ProtectedRoute({auth,roles,children}:{auth:any;roles?:Profile['role'][];children:ReactNode}) {
+function ProtectedRoute({auth,roles,children}:{auth:any;roles?:Profile['role'][]|undefined;children:ReactNode}) {
   const [path,setLocation]=useLocation();
   useEffect(()=>{
     if(!auth.loading&&!auth.session)setLocation(`/login?redirect=${encodeURIComponent(path)}`);
@@ -321,7 +321,7 @@ function Home({ auth, notify }: { auth: any; notify: any }) {
       <section className="section"><div className="section-head"><div><h2>Featured creators</h2><p>Meet the people shaping what comes next.</p></div><Link href="/creators" className="text-link">View all <ArrowRight size={14}/></Link></div>
         {creators.loading ? <SkeletonGrid/> : creators.records.length ? <div className="creator-grid">{creators.records.map((c,i)=><CreatorCard key={c.id} creator={c} index={i} />)}</div> : <EmptyState title={creators.error ? 'Creator directory is waiting to connect' : 'The creator directory is getting started'} text={creators.error || 'Published creator profiles will appear here once they are available in Supabase.'} action="Discover creators" href="/creators"/>}
       </section>
-      <section className="section"><div className="section-head"><div><h2>Find your creative lane</h2><p>Browse by the kind of work you want to make.</p></div><Link href="/projects" className="text-link">Explore projects <ArrowRight size={14}/></Link></div><div className="category-grid">{[['▦','AI Filmmaking','Video & short films'],['◈','AI Animation','Animated & illustration'],['✳','Generative Art','Digital art & explorations'],['↗','Product Advertising','Brand & product visuals'],['▧','Fashion & Lifestyle','Campaign & motion']].map(([icon,name,desc])=><Link href={`/projects?type=${encodeURIComponent(name)}`} className="category" key={name}><div className="category-icon">{icon}</div><strong>{name}</strong><small>{desc}</small></Link>)}</div></section>
+      <section className="section"><div className="section-head"><div><h2>Find your creative lane</h2><p>Browse by the kind of work you want to make.</p></div><Link href="/projects" className="text-link">Explore projects <ArrowRight size={14}/></Link></div><div className="category-grid">{[['▦','AI Filmmaking','Video & short films'],['◈','AI Animation','Animated & illustration'],['✳','Generative Art','Digital art & explorations'],['↗','Product Advertising','Brand & product visuals'],['▧','Fashion & Lifestyle','Campaign & motion']].map(([icon,name,desc]: string[])=><Link href={`/projects?type=${encodeURIComponent(name)}`} className="category" key={name}><div className="category-icon">{icon}</div><strong>{name}</strong><small>{desc}</small></Link>)}</div></section>
       <section className="section"><div className="section-head"><div><h2>From first spark to final file</h2><p>A clear path for both sides of the collaboration.</p></div></div><div className="steps-grid">{[['01','Discover creators','Browse portfolios and find the right creative fit.'],['02','Share your brief','Tell creators what you need. Keep rights and budget explicit.'],['03','Collaborate and review','Manage stages, deliverables, feedback and revisions together.'],['04','Receive final assets','Approve the delivery, then leave a review.']].map(([n,title,desc],i)=><div className="step-card" key={n}><div className="step-icon">{[<Compass size={17}/>,<FilePlus2 size={17}/>,<MessageSquareText size={17}/>,<Check size={17}/>][i]}</div><strong>{n}. {title}</strong><p>{desc}</p></div>)}</div></section>
       <section className="section"><div className="section-head"><div><h2>Open creative briefs</h2><p>Live opportunities published by brands and agencies.</p></div><Link href="/projects" className="text-link">Browse projects <ArrowRight size={14}/></Link></div>
         {briefs.loading ? <div className="skeleton-line"/> : briefs.records.length ? <div className="list-stack">{briefs.records.map(b=><ProjectCard key={b.id} brief={b}/>)}</div> : <EmptyState title="No published briefs yet" text={briefs.error || 'When brands publish a brief, creators can discover and apply to the opportunity here.'} action="Write a brief" href="/briefs/new"/>}
@@ -602,7 +602,7 @@ function Workspace({auth,notify}:{auth:any;notify:any}){
   if(!auth.profile)return <main className="page"><AuthGate message="Sign in to open an engagement workspace."/></main>;
   if(loading)return <main className="page"><ProjectSkeletons/></main>;
   if(!engagement)return <main className="page"><EmptyState title="Workspace unavailable" text={error||'This engagement could not be found or you do not have access.'} action="Dashboard" href="/dashboard"/></main>;
-  return <main className="page animate-in"><div className="page-title"><div><div className="eyebrow">Collaboration workspace</div><h1>Engagement room</h1><p>Move the work forward with clear stages and versioned delivery.</p></div><span className="pill">{engagement.status||'in progress'}</span></div><div className="panel"><div className="row between"><div><span className="muted">Brief</span><h3>{engagement.brief_id}</h3></div><div className="row"><span className="muted">Budget agreed</span><strong>{engagement.agreed_budget??'Not set'}</strong><span className="muted">Deadline</span><strong>{engagement.agreed_deadline||'Not set'}</strong></div></div><div className="workspace-stages">{stageNames.map((s,i)=><div className={`stage ${i<=current?'active':''}`} key={s}><span className="stage-dot">{i<current?<Check size={13}/>:i+1}</span>{s}{i<stageNames.length-1&&<span className="stage-line"/>}</div>)}</div><div className="row between"><span className="muted">Both sides can move the engagement stage forward.</span><div className="row">{current<stageNames.length-1&&<button className="button primary small" onClick={()=>changeStage(stageNames[current+1]||'Complete')}>Move to {stageNames[current+1]} <ArrowRight size={13}/></button>}{current>0&&<button className="button small" onClick={()=>changeStage(stageNames[current-1])}>Previous stage</button>}</div></div></div>
+  return <main className="page animate-in"><div className="page-title"><div><div className="eyebrow">Collaboration workspace</div><h1>Engagement room</h1><p>Move the work forward with clear stages and versioned delivery.</p></div><span className="pill">{engagement.status||'in progress'}</span></div><div className="panel"><div className="row between"><div><span className="muted">Brief</span><h3>{engagement.brief_id}</h3></div><div className="row"><span className="muted">Budget agreed</span><strong>{engagement.agreed_budget??'Not set'}</strong><span className="muted">Deadline</span><strong>{engagement.agreed_deadline||'Not set'}</strong></div></div><div className="workspace-stages">{stageNames.map((s,i)=><div className={`stage ${i<=current?'active':''}`} key={s}><span className="stage-dot">{i<current?<Check size={13}/>:i+1}</span>{s}{i<stageNames.length-1&&<span className="stage-line"/>}</div>)}</div><div className="row between"><span className="muted">Both sides can move the engagement stage forward.</span><div className="row">{current<stageNames.length-1&&<button className="button primary small" onClick={()=>changeStage(stageNames[current+1]||'Complete')}>Move to {stageNames[current+1]} <ArrowRight size={13}/></button>}{current>0&&<button className="button small" onClick={()=>changeStage(stageNames[current-1] ?? 'Kickoff')}>Previous stage</button>}</div></div></div>
     <div className="content-grid" style={{gridTemplateColumns:'1fr 330px',marginTop:20}}><section><div className="section-head"><div><h2>Deliverables</h2><p>Every delivery is a new version stored in Supabase Storage.</p></div></div>{deliverables.loading?<ProjectSkeletons/>:deliverables.records.length?<div className="list-stack">{deliverables.records.map((d:any)=><div className="panel" key={d.id}><div className="row between"><div><span className="pill">v{d.version} · {d.status}</span><h3>{d.title}</h3></div>{d.file_url&&<a href={d.file_url} target="_blank" rel="noreferrer" className="button small">Open file <ArrowRight size={13}/></a>}</div><p className="muted">{d.description||'No delivery notes.'}</p>{auth.profile.role==='brand'&&<div className="row" style={{flexWrap:'wrap'}}><button className="button primary small" onClick={()=>review(d,'approved')}>Approve</button><input className="revision-input" value={comment} onChange={e=>setComment(e.target.value)} placeholder="Revision request comment"/><button className="button small" onClick={()=>review(d,'revision_requested')}>Request revision</button></div>}</div>)}</div>:<EmptyState title="No files delivered" text="The creator can submit the first file version when production begins."/>}
       {auth.profile.role==='creator'&&<form className="panel" style={{marginTop:15}} onSubmit={submit}><h3>Submit a new version</h3><div className="form-grid"><Field label="Deliverable title"><input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Campaign hero"/></Field><Field label="File"><input type="file" required onChange={e=>setFile(e.target.files?.[0]||null)}/></Field><Field label="Version notes" full><textarea value={description} onChange={e=>setDescription(e.target.value)} placeholder="What changed in this version?"/></Field></div><button className="button primary" style={{marginTop:13}} disabled={busy}>{busy?'Uploading…':'Submit version'}<Upload size={14}/></button></form>}
     </section><aside><div className="panel"><h3 style={{marginTop:0}}>Revision history</h3>{revisions.records.length?revisions.records.map((r:any)=><div className="revision-row" key={r.id}><span className="pill">{r.status}</span><p className="muted">{r.comment}</p></div>):<p className="muted">No revision requests yet.</p>}</div><ReviewForm auth={auth} engagement={engagement} notify={notify}/></aside></div>
