@@ -1,0 +1,69 @@
+[
+  {
+    "name": "Arjun Mehta",
+    "email": "creator1@kampus-demo.com",
+    "password": "Kampus@2026Creator1",
+    "role": "creator",
+    "specialization": "AI Filmmaking"
+  },
+  {
+    "name": "Maya Sharma",
+    "email": "creator2@kampus-demo.com",
+    "password": "Kampus@2026Creator2",
+    "role": "creator",
+    "specialization": "AI Animation"
+  },
+  {
+    "name": "Rohan Kapoor",
+    "email": "creator3@kampus-demo.com",
+    "password": "Kampus@2026Creator3",
+    "role": "creator",
+    "specialization": "Generative Art"
+  },
+  {
+    "name": "Ananya Rao",
+    "email": "creator4@kampus-demo.com",
+    "password": "Kampus@2026Creator4",
+    "role": "creator",
+    "specialization": "AI Product Advertising"
+  },
+  {
+    "name": "Vikram Singh",
+    "email": "creator5@kampus-demo.com",
+    "password": "Kampus@2026Creator5",
+    "role": "creator",
+    "specialization": "Motion Graphics"
+  },
+  {
+    "name": "Isha Patel",
+    "email": "creator6@kampus-demo.com",
+    "password": "Kampus@2026Creator6",
+    "role": "creator",
+    "specialization": "AI Fashion & Lifestyle"
+  },
+  {
+    "name": "Kabir Verma",
+    "email": "creator7@kampus-demo.com",
+    "password": "Kampus@2026Creator7",
+    "role": "creator",
+    "specialization": "AI 3D & Creative Design"
+  },
+  {
+    "name": "NovaWear Marketing",
+    "email": "business1@kampus-demo.com",
+    "password": "Kampus@2026Business1",
+    "role": "brand",
+    "company_name": "NovaWear",
+    "industry": "Fashion & Lifestyle",
+    "bio": "NovaWear is a modern fashion brand looking for AI creators to produce cinematic product campaigns and social media content."
+  },
+  {
+    "name": "PixelForge Creative Agency",
+    "email": "business2@kampus-demo.com",
+    "password": "Kampus@2026Business2",
+    "role": "brand",
+    "company_name": "PixelForge Agency",
+    "industry": "Advertising & Creative",
+    "bio": "PixelForge is a creative agency working with brands on AI-powered advertising, product films, social content, and visual campaigns."
+  }
+]
