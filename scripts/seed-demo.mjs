@@ -346,6 +346,7 @@ for (const brief of briefSeed) {
   }
   const result = await rest('briefs', 'POST', {
     ...brief,
+    company: undefined,
     brand_id: brandId,
     company_name: brief.company,
     required_tools: brief.required_tools,
