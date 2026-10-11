@@ -7,7 +7,7 @@ const SYSTEM_PROMPT = `You are the Kampus.VC brief assistant. Kampus.VC is a mar
 Your job: help users write strong creative briefs. Ask good questions about objective, audience, deliverables, formats, timeline, budget, and usage rights. Give concrete, practical suggestions. Keep answers concise and friendly, using short paragraphs or bullet points. Never invent prices or platform policies you don't know.`;
 
 export const askBriefAssistant = createServerFn({ method: "POST" })
-  .inputValidator((data: { messages: ChatMessage[] }) => {
+  .validator((data: { messages: ChatMessage[] }) => {
     if (!data || !Array.isArray(data.messages) || data.messages.length === 0) {
       throw new Error("messages are required");
     }
