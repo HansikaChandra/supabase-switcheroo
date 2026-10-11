@@ -18,7 +18,7 @@ export const askBriefAssistant = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
-    const apiKey = process.env.GOOGLE_API_KEY;
+    const apiKey = process.env['GOOGLE_API_KEY'];
     if (!apiKey) {
       return { ok: false as const, error: "AI provider is not configured yet." };
     }
