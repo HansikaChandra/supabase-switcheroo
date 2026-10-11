@@ -610,8 +610,39 @@ function Workspace({auth,notify}:{auth:any;notify:any}){
 }
 function ReviewForm({auth,engagement,notify}:{auth:any;engagement:any;notify:any}){const[rating,setRating]=useState(5);const[review,setReview]=useState('');const[busy,setBusy]=useState(false);const submit=async(e:FormEvent)=>{e.preventDefault();if(!supabase||!auth.session)return;setBusy(true);const{error}=await supabase.from('reviews').insert({engagement_id:engagement.id,reviewer_id:auth.session.user.id,reviewee_id:auth.session.user.id===engagement.creator_id?engagement.brand_id:engagement.creator_id,rating,review});setBusy(false);notify(error?.message||'Review submitted.',error?'error':'success');if(!error)setReview('')};return <form className="panel" style={{marginTop:13}} onSubmit={submit}><h3 style={{marginTop:0}}>Leave a review</h3><p className="muted">Reviews are available after the engagement is complete.</p><select value={rating} onChange={e=>setRating(Number(e.target.value))} disabled={engagement.status!=='completed'}>{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</select><textarea style={{width:'100%',marginTop:9}} disabled={engagement.status!=='completed'} value={review} onChange={e=>setReview(e.target.value)} placeholder="Share a helpful, specific review."/><button className="button primary small" disabled={engagement.status!=='completed'||busy||!review.trim()} style={{marginTop:8}}>Submit review <Star size={13}/></button></form>}
 
+type AssistantMessage = { role: 'user' | 'assistant'; text: string };
+
 function Assistant({auth,notify}:{auth:any;notify:any}){
-  return <main className="page animate-in"><div className="page-title"><div><div className="eyebrow">Brief companion</div><h1>AI brief assistant</h1><p>Real AI suggestions will appear here when a provider is enabled.</p></div><Link href="/briefs/new" className="button primary">Open brief builder <ArrowRight size={14}/></Link></div><div className="assistant-shell"><aside className="panel assistant-aside"><div className="assistant-badge"><WandSparkles size={21}/></div><h3>Good briefs invite good questions.</h3><p className="muted">Connect the AI provider to get live suggestions on audience, creative direction, deliverables and missing context.</p><div className="assist-topic"><span>01</span> Objective and audience</div><div className="assist-topic"><span>02</span> Deliverables and formats</div><div className="assist-topic"><span>03</span> Explicit usage terms</div></aside><section className="chat-panel"><div className="chat-header"><div className="assistant-badge"><Sparkles size={17}/></div><div><strong>Kampus brief assistant</strong><div className="muted">AI provider not connected</div></div><span className="pill">Disabled</span></div><div className="chat-messages"><div className="assistant-status"><Sparkles size={20}/><h2>Live AI is not enabled</h2><p>This assistant is temporarily unavailable. No prompt is sent, and no generated answer is shown until a provider is connected.</p><p>Using Replit AI can consume workspace credits when people submit requests. The assistant is waiting for your approval before that is enabled.</p></div></div><div className="chat-input"><input disabled placeholder="AI assistant is not connected yet…" aria-label="AI assistant unavailable"/><button className="button primary" disabled aria-label="Send"><Send size={15}/></button></div></section></div></main>;
+  const [messages, setMessages] = useState<AssistantMessage[]>([]);
+  const [draft, setDraft] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const send = async (e?: FormEvent) => {
+    e?.preventDefault();
+    const text = draft.trim();
+    if (!text || sending) return;
+    const next = [...messages, { role: 'user' as const, text }];
+    setMessages(next);
+    setDraft('');
+    setSending(true);
+    try {
+      const result = await askBriefAssistant({ data: { messages: next } });
+      if (result.ok) {
+        setMessages([...next, { role: 'assistant', text: result.reply }]);
+      } else {
+        notify({ message: result.error, kind: 'error' });
+        setMessages([...next, { role: 'assistant', text: result.error }]);
+      }
+    } catch (err: any) {
+      const msg = 'The assistant could not be reached. Please try again.';
+      notify({ message: msg, kind: 'error' });
+      setMessages([...next, { role: 'assistant', text: msg }]);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return <main className="page animate-in"><div className="page-title"><div><div className="eyebrow">Brief companion</div><h1>AI brief assistant</h1><p>Live suggestions on audience, creative direction, deliverables and missing context.</p></div><Link href="/briefs/new" className="button primary">Open brief builder <ArrowRight size={14}/></Link></div><div className="assistant-shell"><aside className="panel assistant-aside"><div className="assistant-badge"><WandSparkles size={21}/></div><h3>Good briefs invite good questions.</h3><p className="muted">Describe your campaign or project and the assistant will help shape it into a strong brief.</p><div className="assist-topic"><span>01</span> Objective and audience</div><div className="assist-topic"><span>02</span> Deliverables and formats</div><div className="assist-topic"><span>03</span> Explicit usage terms</div></aside><section className="chat-panel"><div className="chat-header"><div className="assistant-badge"><Sparkles size={17}/></div><div><strong>Kampus brief assistant</strong><div className="muted">Powered by Google Gemini</div></div><span className="pill">Live</span></div><div className="chat-messages">{messages.length === 0 ? <div className="assistant-status"><Sparkles size={20}/><h2>Start with your idea</h2><p>Tell the assistant what you want to create — for example, "a cinematic product film for a sneaker launch" — and it will help you turn it into a clear brief.</p></div> : messages.map((m, i) => <div key={i} className={m.role === 'user' ? 'chat-msg user' : 'chat-msg assistant'}><strong>{m.role === 'user' ? 'You' : 'Assistant'}</strong><p style={{ whiteSpace: 'pre-wrap' }}>{m.text}</p></div>)}{sending && <div className="chat-msg assistant"><strong>Assistant</strong><p className="muted">Thinking…</p></div>}</div><form className="chat-input" onSubmit={send}><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Describe your project or ask a question…" aria-label="Message the AI assistant" disabled={sending}/><button className="button primary" type="submit" disabled={sending || !draft.trim()} aria-label="Send"><Send size={15}/></button></form></section></div></main>;
 }
 
 function AuthPage({auth,notify,initialMode}:{auth:any;notify:any;initialMode?:'signin'|'signup'|'reset'|'new-password'}){
