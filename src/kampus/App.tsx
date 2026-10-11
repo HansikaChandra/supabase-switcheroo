@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNo
 import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/kampus/error-boundary';
+import { askBriefAssistant } from '@/kampus/assistant.server';
 import { Toaster } from '@/kampus/toaster';
 import { TooltipProvider } from '@/kampus/tooltip';
 import { Link, Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
