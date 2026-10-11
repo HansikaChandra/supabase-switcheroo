@@ -631,12 +631,12 @@ function Assistant({auth,notify}:{auth:any;notify:any}){
       if (result.ok) {
         setMessages([...next, { role: 'assistant', text: result.reply }]);
       } else {
-        notify({ message: result.error, kind: 'error' });
+        notify(result.error, 'error');
         setMessages([...next, { role: 'assistant', text: result.error }]);
       }
     } catch (err: any) {
       const msg = 'The assistant could not be reached. Please try again.';
-      notify({ message: msg, kind: 'error' });
+      notify(msg, 'error');
       setMessages([...next, { role: 'assistant', text: msg }]);
     } finally {
       setSending(false);
